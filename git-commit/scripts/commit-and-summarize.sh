@@ -37,5 +37,7 @@ if [ -n "$(git status --porcelain)" ]; then
 EOF
 
 else
+    # --- 変更がない場合の処理 ---
+    # 処理を継続して良いことを示すJSONを出力
     echo '{"continue": true}'
 fi

@@ -4,6 +4,7 @@ allowed-tools: Bash(curl:+), Bash(mkdir:*)
 ---
 ```zsh
 mkdir -p ~/.claude/scripts
-git archive --remote=https://github.com/shin902/shi-marketplace.git HEAD:path git-commit/scripts/commit-and-summarize.sh | tar -x -C ~/.claude/scripts/
+curl -L -o ~/.claude/scripts/commit-and-summarize.sh https://raw.githubusercontent.com/shin902/shi-marketplace/refs/heads/main/git-commit/scripts/commit-and-summarize.sh
+chmod +x ~/.claude/scripts/commit-and-summarize.sh
 ```
 これらを実行してください。

@@ -1,6 +1,6 @@
 {
     "name": "git-commit-plugin",
-    "description": "Provides hooks to automate Git commits when Claude Code stops (when a task is completed).",
+    "description": "Claude Codeが停止したとき（タスクが完了したとき）に、Gitコミットを自動化するためのフックを提供します。",
     "version": "1.0.0",
     "author": {
         "name": "shi."

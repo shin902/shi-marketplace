@@ -13,8 +13,7 @@
       "name": "notification-plugin",
       "source": "./notification",
       "description": "Claude Codeが停止したとき（タスクが完了したとき）・ツールの実行確認が必要になったときに、通知音を鳴らすためのフックを提供します。"
-    }
-    ,
+    },
     {
       "name": "serena-plugin",
       "source": "./serena",

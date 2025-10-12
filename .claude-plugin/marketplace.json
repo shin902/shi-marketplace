@@ -9,5 +9,11 @@
       "source": "./git-commit",
       "description": "Gitコミット作業を自動化するフックプラグインです。未コミットの変更を検出し、適切な粒度でコミットメッセージを生成して自動的にコミット・プッシュを実行します。"
     }
+    ,
+    {
+      "name": "serena-plugin",
+      "source": "./serena",
+      "description": "serena MCP Server, 開始時にプロジェクトのアクティベートを促すHooksを提供します。"
+    }
   ]
 }

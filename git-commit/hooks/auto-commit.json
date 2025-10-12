@@ -1,0 +1,16 @@
+{
+    "description": "Claude Codeの処理が終了したとき（タスク完了時）に、Gitコミットを自動化するフックを提供します。",
+    "hooks": {
+        "Stop": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "${CLAUDE_PROJECT_DIR}/scripts/commit-and-summarize.sh"
+                    }
+                ]
+            }
+        ]
+    }
+}

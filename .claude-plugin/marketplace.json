@@ -1,0 +1,13 @@
+{
+  "name": "claude-marketplace",
+  "owner": {
+    "name": "shi."
+  },
+  "plugins": [
+    {
+      "name": "git-commit-plugin",
+      "source": "./git-commit",
+      "description": "Git Commit Hooks"
+    }
+  ]
+}

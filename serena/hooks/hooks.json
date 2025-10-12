@@ -1,0 +1,15 @@
+{
+    "hooks": {
+        "SessionStart": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "echo '一番最初にserenaのプロジェクトをカウントディレクトリ(`.`)でのアクティベートなど、初期設定を実行してください。'"
+                    }
+                ]
+            }
+        ]
+    }
+}

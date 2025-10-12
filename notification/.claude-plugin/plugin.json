@@ -1,0 +1,8 @@
+{
+    "name": "notification-plugin",
+    "description": "Claude Codeが停止したとき（タスクが完了したとき）・ツールの実行確認が必要になったときに、通知音を鳴らすためのフックを提供します。",
+    "version": "1.0.0",
+    "author": {
+        "name": "shi."
+    }
+}

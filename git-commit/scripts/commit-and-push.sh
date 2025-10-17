@@ -21,12 +21,7 @@ fi
 if [ -n "$(git status --porcelain)" ]; then
     # --- 変更がある場合の処理 ---
 
-    # AIに渡したいコマンドを実行し、結果を変数に格納
-    GIT_STATUS_OUTPUT=$(git status)
-    GIT_DIFF_OUTPUT=$(git diff)
-
-    # reasonに含める指示を作成
-    REASON="git statusとgit diffを実行した結果はこちらです。結果を分析し、git addを実行して適切なコミットメッセージを作成し、コミットを実行し、pushも実行してください。\n\n--- git statusの結果 ---\n${GIT_STATUS_OUTPUT}\n\n--- git diffの結果 ---\n${GIT_DIFF_OUTPUT}"
+    REASON="git-commit-pushサブエージェントを起動して、コミット作業を実行してください"
 
     # Claudeに作業を指示し、停止をブロックするJSONを出力
     cat <<EOF

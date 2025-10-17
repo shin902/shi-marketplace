@@ -1,7 +1,7 @@
 {
     "name": "git-commit-plugin",
     "description": "Claude Codeが停止したとき（タスクが完了したとき）に、Gitコミットを自動化するためのフックを提供します。",
-    "version": "2.1.1",
+    "version": "3.0.0",
     "author": {
         "name": "shi."
     }

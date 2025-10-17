@@ -7,7 +7,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "~/.claude/scripts/commit-and-summarize.sh"
+                        "command": "echo 'git-commit-pushサブエージェントを起動して、コミット作業を実行してください'"
                     }
                 ]
             }

@@ -1,0 +1,26 @@
+{
+    "hooks": {
+        "SessionStart": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.claude/plugins/marketplaces/Marketplace-of-shi/principles-reminder-hooks/scripts/ai-principles-reminder-prompt.sh"
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.claude/plugins/marketplaces/Marketplace-of-shi/principles-reminder-hooks/scripts/ai-principles-reminder.sh"
+                    }
+                ]
+            }
+        ]
+    }
+}

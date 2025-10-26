@@ -18,6 +18,11 @@
       "name": "serena-plugin",
       "source": "./serena",
       "description": "serena MCP Server, 開始時にプロジェクトのアクティベートを促すHooksを提供します。"
+    },
+    {
+      "name": "principles-reminder-plugin",
+      "source": "./principles-reminder-hooks",
+      "description": "AIの暴走を防止する「AI運用5原則」をClaude Codeが止まったときに出力するようにするプラグインです。"
     }
   ]
 }

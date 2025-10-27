@@ -13,6 +13,9 @@ Claude Codeが停止したとき（タスクが完了したとき）・ツール
 ### serena-plugin
 serena MCP Server, 開始時にプロジェクトのアクティベートを促すHooksを提供します。
 
+### principles-reminder-plugin
+AIの暴走を防止する「AI運用5原則」をClaude Codeが停止したとき（タスクが完了したとき）に表示するためのフックを提供します。セッション開始時とタスク完了時に、AIが適切な権限範囲で動作しているかを確認するための原則を表示します。
+
 ## インストール方法
 
 ### 前提条件
@@ -35,6 +38,7 @@ serena MCP Server, 開始時にプロジェクトのアクティベートを促�
 /plugin install git-commit-plugin@Marketplace-of-shi
 /plugin install notification-plugin@Marketplace-of-shi
 /plugin install serena-plugin@Marketplace-of-shi
+/plugin install principles-reminder-plugin@Marketplace-of-shi
 ```
 
 ### インストールの確認
@@ -47,11 +51,10 @@ serena MCP Server, 開始時にプロジェクトのアクティベートを促�
 
 2. **プラグイン固有のコマンド実行**:
 各プラグインの機能を直接テストしてください。例えば：
-```bash
-# git-commit-pluginの場合: 実際にタスク完了時に自動コミットされることを確認
-# notification-pluginの場合: 通知音が鳴ることを確認
-# serena-pluginの場合: プロジェクト開始時のアクティベート確認
-```
+- git-commit-pluginの場合: 実際にタスク完了時に自動コミットされることを確認
+- notification-pluginの場合: 通知音が鳴ることを確認
+- serena-pluginの場合: プロジェクト開始時のアクティベート確認
+- principles-reminder-pluginの場合: タスク完了時にAI運用5原則が表示されることを確認
 
 3. **プラグイン詳細の確認**:
 `/plugin` コマンドから "Manage Plugins" を選択して、各プラグインの詳細と提供機能を確認してください。
@@ -79,6 +82,7 @@ claude-marketplace/
 ├── git-commit/               # git-commitプラグイン
 ├── notification/             # notificationプラグイン
 ├── serena/                   # serenaプラグイン
+├── principles-reminder-hooks/# principles-reminderプラグイン
 ├── CONTRIBUTING.md           # コントリビューションガイド
 ├── README.md                 # このファイル
 └── LICENSE                   # ライセンス

@@ -23,6 +23,11 @@
       "name": "principles-reminder-plugin",
       "source": "./principles-reminder-hooks",
       "description": "AIの暴走を防止する「AI運用5原則」をClaude Codeが止まったときに出力するようにするプラグインです。"
+    },
+    {
+      "name": "marp-slideplugin",
+      "source": "./marp-slide",
+      "description": "Marpスライドを7つの美しいテーマで作成。スライドやプレゼン資料の作成依頼時に使用。「良い感じにして」などの曖昧な指示にも対応し、自動的に高品質なデザインを適用。"
     }
   ]
 }

@@ -6,7 +6,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "zsh ~/.claude/plugins/marketplaces/Marketplace-of-shi/principles-reminder-hooks/scripts/ai-principles-reminder-prompt.sh"
+                        "command": "zsh ${CLAUDE_PLUGIN_ROOT}/scripts/ai-principles-reminder-prompt.sh"
                     }
                 ]
             }
@@ -17,7 +17,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "zsh ~/.claude/plugins/marketplaces/Marketplace-of-shi/principles-reminder-hooks/scripts/ai-principles-reminder.sh"
+                        "command": "zsh ${CLAUDE_PLUGIN_ROOT}/scripts/ai-principles-reminder.sh"
                     }
                 ]
             }

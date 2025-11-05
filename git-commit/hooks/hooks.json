@@ -7,7 +7,7 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "zsh ~/.claude/plugins/marketplaces/Marketplace-of-shi/git-commit/scripts/commit-and-push.sh"
+                        "command": "zsh ${CLAUDE_PLUGIN_ROOT}/scripts/commit-and-push.sh"
                     }
                 ]
             }

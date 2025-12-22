@@ -1,0 +1,8 @@
+{
+    "name": "custom-slash-commands-plugin",
+    "description": "私が適用している全てのカスタムスラッシュコマンドを提供します。",
+    "version": "1.0.0",
+    "author": {
+        "name": "shi."
+    }
+}

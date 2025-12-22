@@ -28,6 +28,11 @@
       "name": "marp-slideplugin",
       "source": "./marp-slide",
       "description": "Marpスライドを7つの美しいテーマで作成。スライドやプレゼン資料の作成依頼時に使用。「良い感じにして」などの曖昧な指示にも対応し、自動的に高品質なデザインを適用。"
+    },
+    {
+      "name": "custom-slash-commands-plugin",
+      "source": "./custom-slash-commands",
+      "description": "私が適用している全てのカスタムスラッシュコマンドを提供します。"
     }
   ]
 }

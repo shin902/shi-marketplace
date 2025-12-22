@@ -5,7 +5,7 @@
   },
   "plugins": [
     {
-      "name": "git-commit-plugin",
+      "name": "git-commit",
       "source": "./git-commit",
       "description": "Gitコミット作業を自動化するフックプラグインです。未コミットの変更を検出し、適切な粒度でコミットメッセージを生成して自動的にコミット・プッシュを実行します。"
     },

@@ -1,7 +1,7 @@
 {
-    "name": "serena-plugin",
+    "name": "serena",
     "description": "serena MCP Server, 開始時にプロジェクトのアクティベートを促すHooksを提供します。",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": {
         "name": "shi."
     }

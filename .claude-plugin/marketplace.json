@@ -10,12 +10,12 @@
       "description": "Gitコミット作業を自動化するフックプラグインです。未コミットの変更を検出し、適切な粒度でコミットメッセージを生成して自動的にコミット・プッシュを実行します。"
     },
     {
-      "name": "notification-plugin",
+      "name": "notification",
       "source": "./notification",
       "description": "Claude Codeが停止したとき（タスクが完了したとき）・ツールの実行確認が必要になったときに、通知音を鳴らすためのフックを提供します。"
     },
     {
-      "name": "serena-plugin",
+      "name": "serena",
       "source": "./serena",
       "description": "serena MCP Server, 開始時にプロジェクトのアクティベートを促すHooksを提供します。"
     },

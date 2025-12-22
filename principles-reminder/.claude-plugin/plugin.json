@@ -1,7 +1,7 @@
 {
     "name": "principles-reminder",
     "description": "AIの暴走を防止する「AI運用5原則」をClaude Codeが止まったときに出力するようにするプラグインです。",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "author": {
         "name": "shi."
     }

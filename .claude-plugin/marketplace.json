@@ -35,9 +35,9 @@
       "description": "私が適用している全てのカスタムスラッシュコマンドを提供します。"
     },
     {
-      "name": "openspec-commands",
-      "source": "./openspec-commands",
-      "description": "OpenSpec CLI コマンドのリファレンスとヘルプです。list、validate、show、archive などの OpenSpec コマンドを操作する場合や、コマンドのオプションおよび使用方法の確認"
-    } 
+      "name": "openspec",
+      "source": "./openspec",
+      "description": "openspecに関連するカスタムスラッシュコマンドやスキルを提供します"
+    }
   ]
 }

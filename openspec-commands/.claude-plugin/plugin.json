@@ -1,8 +1,0 @@
-{
-    "name": "openspec-commands",
-    "description": "OpenSpec CLI コマンドのリファレンスとヘルプです。list、validate、show、archive などの OpenSpec コマンドを操作する場合や、コマンドのオプションおよび使用方法を確認したい時に使用してください。",
-    "version": "0.0.1",
-    "author": {
-        "name": "shi."
-    }
-}

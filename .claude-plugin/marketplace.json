@@ -38,6 +38,11 @@
       "name": "openspec",
       "source": "./openspec",
       "description": "openspecに関連するカスタムスラッシュコマンドやスキルを提供します"
+    },
+    {
+      "name": "web-serach",
+      "source": "./web-search",
+      "description": "Gemini CLIを使用したウェブサーチを提供します"
     }
   ]
 }

@@ -1,0 +1,8 @@
+{
+  "name": "web-search-plugin",
+  "description": "Gemini CLIを使用したウェブサーチを提供します",
+  "version": "0.0.1",
+  "author": {
+    "name": "shi."
+  }
+}

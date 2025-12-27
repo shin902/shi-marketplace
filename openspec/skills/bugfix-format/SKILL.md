@@ -1,5 +1,5 @@
 ---
-name: :bugfix-format
+name: bugfix-format
 description: バグ修正ドキュメントのフォルダ構造と形式。/fixコマンドが参照する。
 ---
 

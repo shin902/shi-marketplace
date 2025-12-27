@@ -16,6 +16,9 @@ serena MCP Server, 開始時にプロジェクトのアクティベートを促�
 ### principles-reminder-plugin
 AIの暴走を防止する「AI運用5原則」をClaude Codeが停止したとき（タスクが完了したとき）に表示するためのフックを提供します。セッション開始時とタスク完了時に、AIが適切な権限範囲で動作しているかを確認するための原則を表示します。
 
+### web-search-plugin
+Gemini CLIを利用してウェブ検索を行う機能を提供します。Claude Codeから直接最新情報を検索・取得することが可能になります。
+
 ## インストール方法
 
 ### 前提条件
@@ -39,6 +42,7 @@ AIの暴走を防止する「AI運用5原則」をClaude Codeが停止したと�
 /plugin install notification-plugin@Marketplace-of-shi
 /plugin install serena-plugin@Marketplace-of-shi
 /plugin install principles-reminder-plugin@Marketplace-of-shi
+/plugin install web-search-plugin@Marketplace-of-shi
 ```
 
 ### インストールの確認

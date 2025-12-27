@@ -1,0 +1,1 @@
+`cp ${CLAUDE_PLUGIN_ROOT}/.claude .`を実行すること

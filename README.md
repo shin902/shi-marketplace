@@ -4,20 +4,29 @@ Claude Code用のプラグインやツールを管理するマーケットプレ
 
 ## 利用可能なプラグイン
 
-### git-commit-plugin
+### git-commit
 Claude Codeが停止したとき（タスクが完了したとき）に、Gitコミットを自動化するためのフックを提供します。未コミットの変更を検出し、適切な粒度でコミットメッセージを生成して自動的にコミット・プッシュを実行します。
 
 ### notification-plugin
 Claude Codeが停止したとき（タスクが完了したとき）・ツールの実行確認が必要になったときに、通知音を鳴らすためのフックを提供します。
 
-### serena-plugin
+### serena
 serena MCP Server, 開始時にプロジェクトのアクティベートを促すHooksを提供します。
 
-### principles-reminder-plugin
+### principles-reminder
 AIの暴走を防止する「AI運用5原則」をClaude Codeが停止したとき（タスクが完了したとき）に表示するためのフックを提供します。セッション開始時とタスク完了時に、AIが適切な権限範囲で動作しているかを確認するための原則を表示します。
 
-### web-search-plugin
-Gemini CLIを利用してウェブ検索を行う機能を提供します。Claude Codeから直接最新情報を検索・取得することが可能になります。
+### marp-slide
+Marpスライドを7つの美しいテーマで作成。スライドやプレゼン資料の作成依頼時に使用。「良い感じにして」などの曖昧な指示にも対応し、自動的に高品質なデザインを適用。
+
+### custom-slash-commands
+私が適用している全てのカスタムスラッシュコマンドを提供します。
+
+### openspec-plugin
+openspecに関連するカスタムスラッシュコマンドやスキルを提供します
+
+### web-search
+Gemini CLIを使用したウェブサーチを提供します
 
 ## インストール方法
 
@@ -38,11 +47,14 @@ Gemini CLIを利用してウェブ検索を行う機能を提供します。Clau
 
 例:
 ```bash
-/plugin install git-commit-plugin@Marketplace-of-shi
+/plugin install git-commit@Marketplace-of-shi
 /plugin install notification-plugin@Marketplace-of-shi
-/plugin install serena-plugin@Marketplace-of-shi
-/plugin install principles-reminder-plugin@Marketplace-of-shi
-/plugin install web-search-plugin@Marketplace-of-shi
+/plugin install serena@Marketplace-of-shi
+/plugin install principles-reminder@Marketplace-of-shi
+/plugin install marp-slide@Marketplace-of-shi
+/plugin install custom-slash-commands@Marketplace-of-shi
+/plugin install openspec-plugin@Marketplace-of-shi
+/plugin install web-search@Marketplace-of-shi
 ```
 
 ### インストールの確認
@@ -55,10 +67,10 @@ Gemini CLIを利用してウェブ検索を行う機能を提供します。Clau
 
 2. **プラグイン固有のコマンド実行**:
 各プラグインの機能を直接テストしてください。例えば：
-- git-commit-pluginの場合: 実際にタスク完了時に自動コミットされることを確認
+- git-commitの場合: 実際にタスク完了時に自動コミットされることを確認
 - notification-pluginの場合: 通知音が鳴ることを確認
-- serena-pluginの場合: プロジェクト開始時のアクティベート確認
-- principles-reminder-pluginの場合: タスク完了時にAI運用5原則が表示されることを確認
+- serenaの場合: プロジェクト開始時のアクティベート確認
+- principles-reminderの場合: タスク完了時にAI運用5原則が表示されることを確認
 
 3. **プラグイン詳細の確認**:
 `/plugin` コマンドから "Manage Plugins" を選択して、各プラグインの詳細と提供機能を確認してください。
@@ -83,10 +95,14 @@ plugin-name/
 claude-marketplace/
 ├── .claude-plugin/
 │   └── marketplace.json      # マーケットプレイス設定
-├── git-commit/               # git-commitプラグイン
-├── notification/             # notificationプラグイン
-├── serena/                   # serenaプラグイン
-├── principles-reminder-hooks/# principles-reminderプラグイン
+├── git-commit/               # git-commit
+├── notification/             # notification-plugin
+├── serena/                   # serena
+├── principles-reminder/      # principles-reminder
+├── marp-slide/               # marp-slide
+├── custom-slash-commands/    # custom-slash-commands
+├── openspec/                 # openspec-plugin
+├── web-search/               # web-search
 ├── CONTRIBUTING.md           # コントリビューションガイド
 ├── README.md                 # このファイル
 └── LICENSE                   # ライセンス

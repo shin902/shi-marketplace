@@ -1,7 +1,7 @@
 {
   "name": "openspec-plugin",
   "description": "openspecに関連するカスタムスラッシュコマンドやスキルを提供します",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "shi."
   }

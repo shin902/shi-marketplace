@@ -21,7 +21,7 @@ fi
 if [ -n "$(git status --porcelain)" ]; then
     # --- 変更がある場合の処理 ---
 
-    REASON="git-commit-pushサブエージェントを起動して、コミット作業を実行してください"
+    REASON="ファイルの変更が検出されました。git-commit-pushサブエージェントを起動して、コミット作業を実行してください"
 
     # Claudeに作業を指示し、停止をブロックするJSONを出力
     cat <<EOF

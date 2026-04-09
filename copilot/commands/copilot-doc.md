@@ -1,9 +1,3 @@
----
-name: use-copilot-cli
-description: GitHub Copilot CLI を使ったタスク自動化スキル。-p モードでのバッチ実行、サブエージェントの直列チェーン、権限設定、モデル・リーズニングエフォートの指定方法をカバーする。
-allowed-tools: Bash, Read, Write, Edit
----
-
 # GitHub Copilot CLI 活用スキル
 
 GitHub Copilot CLI (`copilot`) を使って、コーディングタスクを効率的に自動化する。

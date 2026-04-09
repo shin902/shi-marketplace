@@ -1,7 +1,7 @@
 {
     "name": "copilot-skills",
     "description": "GitHub Copilotをオーケストレーションするためのスキルを提供します。",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "author": {
         "name": "shi."
     }

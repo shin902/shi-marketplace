@@ -1,0 +1,8 @@
+{
+  "name": "git-pr",
+  "description": "Gitの最新レビューを取得するスクリプト、スキルを提供します",
+  "version": "1.0.0",
+  "author": {
+    "name": "shi."
+  }
+}

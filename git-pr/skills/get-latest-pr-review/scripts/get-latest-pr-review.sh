@@ -103,11 +103,18 @@ fi
 # 最新レビューに紐づくインラインコメントを検索
 INLINE_COMMENTS=""
 if [[ "$ITEM_TYPE" == "review" ]]; then
+  # まずはプルリク全体のコメントから検索
   INLINE_COMMENTS="$(
     echo "$REVIEW_COMMENTS_JSON" \
     | jq --argjson rid "$ITEM_ID" \
       '[.[] | select(.pull_request_review_id == $rid)]'
   )"
+  
+  # 見つからない場合は reviews/{id}/comments エンドポイントを試す
+  COMMENT_COUNT="$(echo "$INLINE_COMMENTS" | jq 'length')"
+  if [[ "$COMMENT_COUNT" -eq 0 ]]; then
+    INLINE_COMMENTS="$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/reviews/${ITEM_ID}/comments" 2>&1)"
+  fi
 fi
 
 COMMENT_COUNT="$(echo "$INLINE_COMMENTS" | jq 'length')"

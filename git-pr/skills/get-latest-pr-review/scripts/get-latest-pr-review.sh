@@ -43,54 +43,76 @@ echo "📦 Repo   : $REPO"
 echo "🔀 PR     : #$PR_NUMBER"
 echo ""
 
-# ── 最新レビューを取得 ─────────────────────────────────────────────────────────
+# ── 両方のデータを取得 ─────────────────────────────────────────────────────────
 
 REVIEWS_JSON="$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/reviews" 2>&1)"
+ISSUE_COMMENTS_JSON="$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" 2>&1)"
+REVIEW_COMMENTS_JSON="$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/comments" 2>&1)"
 
-LATEST_REVIEW="$(
-  echo "$REVIEWS_JSON" \
-  | jq 'sort_by(.submitted_at) | last'
+# ── 最新の「レビュー」または「issueコメント」を見つける ─────────────────────────
+
+# レビューは submitted_at、issueコメントは created_at を使用
+LATEST_REVIEW_ITEM="$(
+  echo "{\"reviews\": $REVIEWS_JSON, \"issue_comments\": $ISSUE_COMMENTS_JSON}" \
+  | jq '
+    (.reviews // []) as $r |
+    (.issue_comments // []) as $ic |
+    (
+      ($r | map({type: "review", id: .id, user: .user.login, html_url: .html_url, time: .submitted_at, body: (.body // "")})) +
+      ($ic | map({type: "issue_comment", id: .id, user: .user.login, html_url: .html_url, time: .created_at, body: (.body // "")}))
+    ) |
+    sort_by(.time) |
+    last
+  '
 )"
 
-if [[ -z "$LATEST_REVIEW" || "$LATEST_REVIEW" == "null" ]]; then
+if [[ -z "$LATEST_REVIEW_ITEM" || "$LATEST_REVIEW_ITEM" == "null" ]]; then
   echo "レビューが見つかりませんでした。" >&2
   exit 1
 fi
 
-REVIEW_ID="$(echo "$LATEST_REVIEW"   | jq -r '.id')"
-REVIEW_URL="$(echo "$LATEST_REVIEW"  | jq -r '.html_url')"
-AUTHOR="$(echo "$LATEST_REVIEW"      | jq -r '.user.login')"
-STATE="$(echo "$LATEST_REVIEW"       | jq -r '.state')"
-SUBMITTED="$(echo "$LATEST_REVIEW"   | jq -r '.submitted_at')"
-BODY="$(echo "$LATEST_REVIEW"        | jq -r '.body // ""')"
+ITEM_TYPE="$(echo "$LATEST_REVIEW_ITEM" | jq -r '.type')"
+ITEM_ID="$(echo "$LATEST_REVIEW_ITEM"   | jq -r '.id')"
+ITEM_URL="$(echo "$LATEST_REVIEW_ITEM"  | jq -r '.html_url')"
+ITEM_AUTHOR="$(echo "$LATEST_REVIEW_ITEM" | jq -r '.user')"
+ITEM_TIME="$(echo "$LATEST_REVIEW_ITEM"  | jq -r '.time')"
+ITEM_BODY="$(echo "$LATEST_REVIEW_ITEM"  | jq -r '.body')"
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📋 最新レビュー"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-printf "  投稿者    : %s\n"   "$AUTHOR"
-printf "  ステータス: %s\n"   "$STATE"
-printf "  日時      : %s\n"   "$SUBMITTED"
-printf "  URL       : %s\n"   "$REVIEW_URL"
-
-if [[ -n "$BODY" ]]; then
-  echo ""
-  echo "  ── 概要 ──────────────────────────────────────────────────────────"
-  echo "$BODY" | sed 's/^/  /'
+if [[ "$ITEM_TYPE" == "review" ]]; then
+  LABEL="📋 最新レビュー"
+else
+  LABEL="💬 最新コメント"
 fi
 
-# ── その review に紐づくインラインコメントを取得 ─────────────────────────────
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "$LABEL"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+printf "  投稿者    : %s\n"   "$ITEM_AUTHOR"
+printf "  タイプ    : %s\n"   "$ITEM_TYPE"
+printf "  日時      : %s\n"   "$ITEM_TIME"
+printf "  URL       : %s\n"   "$ITEM_URL"
 
-ALL_COMMENTS_JSON="$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/comments" 2>&1)"
+if [[ -n "$ITEM_BODY" && "$ITEM_BODY" != "null" ]]; then
+  echo ""
+  echo "  ── 概要 ──────────────────────────────────────────────────────────"
+  echo "$ITEM_BODY" | sed 's/^/  /'
+fi
 
-INLINE_COMMENTS="$(
-  echo "$ALL_COMMENTS_JSON" \
-  | jq --argjson rid "$REVIEW_ID" \
-    '[.[] | select(.pull_request_review_id == $rid)]'
-)"
+# ── インラインコメントを取得 ───────────────────────────────────────────────────
+
+# 最新レビューに紐づくインラインコメントを検索
+INLINE_COMMENTS=""
+if [[ "$ITEM_TYPE" == "review" ]]; then
+  INLINE_COMMENTS="$(
+    echo "$REVIEW_COMMENTS_JSON" \
+    | jq --argjson rid "$ITEM_ID" \
+      '[.[] | select(.pull_request_review_id == $rid)]'
+  )"
+fi
 
 COMMENT_COUNT="$(echo "$INLINE_COMMENTS" | jq 'length')"
 
-if [[ "$COMMENT_COUNT" -eq 0 ]]; then
+if [[ -z "$INLINE_COMMENTS" || "$INLINE_COMMENTS" == "null" || "$COMMENT_COUNT" -eq 0 ]]; then
   echo ""
   echo "  (インラインコメントなし)"
 else

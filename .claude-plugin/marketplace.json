@@ -45,8 +45,8 @@
       "description": "Gemini CLIを使用したウェブサーチを提供します"
     },
     {
-      "name": "copilot",
-      "source": "./copilot/.claude-plugin",
+      "name": "orchestration",
+      "source": "./orchestration",
       "description": "GitHub Copilotをオーケストレーションするためのスキルを提供します。"
     }
   ]

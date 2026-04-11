@@ -47,7 +47,7 @@
     {
       "name": "orchestration",
       "source": "./orchestration",
-      "description": "GitHub Copilotをオーケストレーションするためのスキルを提供します。"
+      "description": "GitHub Copilot、Codex CLIをClaue Codeからオーケストレーションするためのスキルを提供します。"
     },
     {
       "name": "get-pr",

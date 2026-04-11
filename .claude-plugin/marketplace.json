@@ -40,8 +40,8 @@
       "description": "openspecに関連するカスタムスラッシュコマンドやスキルを提供します"
     },
     {
-      "name": "web-search-plugin",
-      "source": "./web-search",
+      "name": "gemini-web-search",
+      "source": "./gemini-web-search",
       "description": "Gemini CLIを使用したウェブサーチを提供します"
     },
     {

@@ -1,7 +1,7 @@
 {
     "name": "copilot-orchestration",
     "description": "GitHub Copilot, Codex CLIをClaue Codeからオーケストレーションするためのスキルを提供します。",
-    "version": "2.1.3",
+    "version": "2.1.4",
     "author": {
         "name": "shi."
     }

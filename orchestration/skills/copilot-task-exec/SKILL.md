@@ -11,6 +11,7 @@ allowed-tools: Bash, Read, Write, Edit
 前提：ワークツリーは使わず、直列でCopilotに実装させる
      モデルはgpt-5.3-codex、リーズニングエフォートはhigh
      禁止事項：タスクファイルを作る上でコードを読み、それらをプロンプトに含めること。コード分析はcopilot経由のcodexに完全にに任せること
+     CopilotのBashコマンドはバックグラウンドタスクとして作成すること
 
 ```bash
 copilot \

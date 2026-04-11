@@ -48,6 +48,11 @@
       "name": "orchestration",
       "source": "./orchestration",
       "description": "GitHub Copilotをオーケストレーションするためのスキルを提供します。"
+    },
+    {
+      "name": "get-pr",
+      "source": "./get-pr",
+      "description": "GitHubのプルリクエストのレビューコメントを取得するためのスキルを提供します。"
     }
   ]
 }

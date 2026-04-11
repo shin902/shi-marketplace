@@ -39,15 +39,14 @@ else
   fi
 fi
 
-echo "📦 Repo   : $REPO"
-echo "🔀 PR     : #$PR_NUMBER"
-echo ""
+echo "Repo: $REPO"
+echo "PR: #$PR_NUMBER"
 
 # ── 両方のデータを取得 ─────────────────────────────────────────────────────────
 
-REVIEWS_JSON="$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/reviews" 2>&1)"
-ISSUE_COMMENTS_JSON="$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" 2>&1)"
-REVIEW_COMMENTS_JSON="$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/comments" 2>&1)"
+REVIEWS_JSON="$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/reviews?per_page=100" 2>&1)"
+ISSUE_COMMENTS_JSON="$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" 2>&1)"
+REVIEW_COMMENTS_JSON="$(gh api "repos/${REPO}/pulls/${PR_NUMBER}/comments?per_page=100" 2>&1)"
 
 # ── 最新の「レビュー」または「issueコメント」を見つける ─────────────────────────
 
@@ -79,23 +78,21 @@ ITEM_TIME="$(echo "$LATEST_REVIEW_ITEM"  | jq -r '.time')"
 ITEM_BODY="$(echo "$LATEST_REVIEW_ITEM"  | jq -r '.body')"
 
 if [[ "$ITEM_TYPE" == "review" ]]; then
-  LABEL="📋 最新レビュー"
+  LABEL="latest_review"
 else
-  LABEL="💬 最新コメント"
+  LABEL="latest_comment"
 fi
 
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "$LABEL"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-printf "  投稿者    : %s\n"   "$ITEM_AUTHOR"
-printf "  タイプ    : %s\n"   "$ITEM_TYPE"
-printf "  日時      : %s\n"   "$ITEM_TIME"
-printf "  URL       : %s\n"   "$ITEM_URL"
+echo ""
+echo "[$LABEL]"
+echo "author: $ITEM_AUTHOR"
+echo "type: $ITEM_TYPE"
+echo "time: $ITEM_TIME"
+echo "url: $ITEM_URL"
 
 if [[ -n "$ITEM_BODY" && "$ITEM_BODY" != "null" ]]; then
-  echo ""
-  echo "  ── 概要 ──────────────────────────────────────────────────────────"
-  echo "$ITEM_BODY" | sed 's/^/  /'
+  echo "body:"
+  echo "$ITEM_BODY"
 fi
 
 # ── インラインコメントを取得 ───────────────────────────────────────────────────
@@ -121,10 +118,10 @@ COMMENT_COUNT="$(echo "$INLINE_COMMENTS" | jq 'length')"
 
 if [[ -z "$INLINE_COMMENTS" || "$INLINE_COMMENTS" == "null" || "$COMMENT_COUNT" -eq 0 ]]; then
   echo ""
-  echo "  (インラインコメントなし)"
+  echo "inline_comments: none"
 else
   echo ""
-  echo "  ── インラインコメント ($COMMENT_COUNT 件) ────────────────────────────────────"
+  echo "inline_comments: $COMMENT_COUNT"
 
   echo "$INLINE_COMMENTS" | jq -c '.[]' | while IFS= read -r comment; do
     C_AUTHOR="$(echo "$comment" | jq -r '.user.login')"
@@ -136,15 +133,12 @@ else
 
     echo ""
     if [[ -n "$C_REPLY" ]]; then
-      printf "  [返信] %s → %s L%s\n" "$C_AUTHOR" "$C_PATH" "$C_LINE"
+      echo "[reply] author: $C_AUTHOR file: $C_PATH line: $C_LINE"
     else
-      printf "  [コメント] %s → %s L%s\n" "$C_AUTHOR" "$C_PATH" "$C_LINE"
+      echo "[inline_comment] author: $C_AUTHOR file: $C_PATH line: $C_LINE"
     fi
-    printf "  %s\n" "$C_URL"
-    echo "  ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"
-    echo "$C_BODY" | sed 's/^/  /'
+    echo "url: $C_URL"
+    echo "body:"
+    echo "$C_BODY"
   done
 fi
-
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

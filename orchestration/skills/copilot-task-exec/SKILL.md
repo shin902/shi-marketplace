@@ -16,7 +16,7 @@ allowed-tools: Bash, Read, Write, Edit
 ```bash
 copilot \
   --model gpt-5.3-codex \
-  --effort high \
+  --effort Xhigh \
   --allow-tool='write' \
   --allow-tool='read' \
   --allow-tool='shell(npm run:*)' \

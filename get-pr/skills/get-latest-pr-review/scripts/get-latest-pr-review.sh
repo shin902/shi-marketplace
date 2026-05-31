@@ -11,6 +11,24 @@
 
 set -euo pipefail
 
+# ── クリップボードコマンドを検出 ────────────────────────────────────────────────
+
+detect_clipboard_cmd() {
+  if command -v pbcopy &>/dev/null; then
+    echo "pbcopy"
+  elif command -v xclip &>/dev/null; then
+    echo "xclip -selection clipboard"
+  elif command -v xsel &>/dev/null; then
+    echo "xsel --clipboard --input"
+  elif command -v clip.exe &>/dev/null; then
+    echo "clip.exe"
+  else
+    echo ""
+  fi
+}
+
+CLIPBOARD_CMD="$(detect_clipboard_cmd)"
+
 # ── 引数パース ─────────────────────────────────────────────────────────────────
 
 PR_ARG="${1:-}"
@@ -83,18 +101,6 @@ else
   LABEL="latest_comment"
 fi
 
-echo ""
-echo "[$LABEL]"
-echo "author: $ITEM_AUTHOR"
-echo "type: $ITEM_TYPE"
-echo "time: $ITEM_TIME"
-echo "url: $ITEM_URL"
-
-if [[ -n "$ITEM_BODY" && "$ITEM_BODY" != "null" ]]; then
-  echo "body:"
-  echo "$ITEM_BODY"
-fi
-
 # ── インラインコメントを取得 ───────────────────────────────────────────────────
 
 # 最新レビューに紐づくインラインコメントを検索
@@ -106,7 +112,7 @@ if [[ "$ITEM_TYPE" == "review" ]]; then
     | jq --argjson rid "$ITEM_ID" \
       '[.[] | select(.pull_request_review_id == $rid)]'
   )"
-  
+
   # 見つからない場合は reviews/{id}/comments エンドポイントを試す
   COMMENT_COUNT="$(echo "$INLINE_COMMENTS" | jq 'length')"
   if [[ "$COMMENT_COUNT" -eq 0 ]]; then
@@ -116,29 +122,63 @@ fi
 
 COMMENT_COUNT="$(echo "$INLINE_COMMENTS" | jq 'length')"
 
-if [[ -z "$INLINE_COMMENTS" || "$INLINE_COMMENTS" == "null" || "$COMMENT_COUNT" -eq 0 ]]; then
-  echo ""
-  echo "inline_comments: none"
-else
-  echo ""
-  echo "inline_comments: $COMMENT_COUNT"
+# ── 出力を生成してクリップボードにコピー ────────────────────────────────────────
 
-  echo "$INLINE_COMMENTS" | jq -c '.[]' | while IFS= read -r comment; do
-    C_AUTHOR="$(echo "$comment" | jq -r '.user.login')"
-    C_PATH="$(echo "$comment"   | jq -r '.path')"
-    C_LINE="$(echo "$comment"   | jq -r '.line // .original_line // "?"')"
-    C_BODY="$(echo "$comment"   | jq -r '.body')"
-    C_URL="$(echo "$comment"    | jq -r '.html_url')"
-    C_REPLY="$(echo "$comment"  | jq -r '.in_reply_to_id // empty')"
+# サブシェルで出力全体をキャプチャ
+OUTPUT="$(
+  echo ""
+  echo "[$LABEL]"
+  echo "author: $ITEM_AUTHOR"
+  echo "type: $ITEM_TYPE"
+  echo "time: $ITEM_TIME"
+  echo "url: $ITEM_URL"
 
-    echo ""
-    if [[ -n "$C_REPLY" ]]; then
-      echo "[reply] author: $C_AUTHOR file: $C_PATH line: $C_LINE"
-    else
-      echo "[inline_comment] author: $C_AUTHOR file: $C_PATH line: $C_LINE"
-    fi
-    echo "url: $C_URL"
+  if [[ -n "$ITEM_BODY" && "$ITEM_BODY" != "null" ]]; then
     echo "body:"
-    echo "$C_BODY"
-  done
+    echo "$ITEM_BODY"
+  fi
+
+  if [[ -z "$INLINE_COMMENTS" || "$INLINE_COMMENTS" == "null" || "$COMMENT_COUNT" -eq 0 ]]; then
+    echo ""
+    echo "inline_comments: none"
+  else
+    echo ""
+    echo "inline_comments: $COMMENT_COUNT"
+
+    echo "$INLINE_COMMENTS" | jq -c '.[]' | while IFS= read -r comment; do
+      C_AUTHOR="$(echo "$comment" | jq -r '.user.login')"
+      C_PATH="$(echo "$comment"   | jq -r '.path')"
+      C_LINE="$(echo "$comment"   | jq -r '.line // .original_line // "?"')"
+      C_BODY="$(echo "$comment"   | jq -r '.body')"
+      C_URL="$(echo "$comment"    | jq -r '.html_url')"
+      C_REPLY="$(echo "$comment"  | jq -r '.in_reply_to_id // empty')"
+
+      echo ""
+      if [[ -n "$C_REPLY" ]]; then
+        echo "[reply] author: $C_AUTHOR file: $C_PATH line: $C_LINE"
+      else
+        echo "[inline_comment] author: $C_AUTHOR file: $C_PATH line: $C_LINE"
+      fi
+      echo "url: $C_URL"
+      echo "body:"
+      echo "$C_BODY"
+    done
+  fi
+)"
+
+# ターミナルに表示
+echo "$OUTPUT"
+
+# クリップボードにコピー
+if [[ -n "$CLIPBOARD_CMD" ]]; then
+  if echo "$OUTPUT" | $CLIPBOARD_CMD 2>/dev/null; then
+    echo "" >&2
+    echo "[COPIED] Output copied to clipboard via: $CLIPBOARD_CMD" >&2
+  else
+    echo "" >&2
+    echo "[WARN] Clipboard copy failed (command: $CLIPBOARD_CMD)" >&2
+  fi
+else
+  echo "" >&2
+  echo "[WARN] No clipboard command found (pbcopy / xclip / xsel required)" >&2
 fi

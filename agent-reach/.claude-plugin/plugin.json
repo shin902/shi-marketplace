@@ -1,0 +1,8 @@
+{
+    "name": "agent-reach",
+    "description": "agent-reachを使用した、YouTube, GitHub, Reddit, RSS, 一般 Web ページからコンテンツを取得して整形するスキル",
+    "version": "1.0.0",
+    "author": {
+        "name": "shi."
+    }
+}

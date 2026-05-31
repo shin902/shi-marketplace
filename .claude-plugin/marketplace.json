@@ -58,6 +58,11 @@
       "name": "explain",
       "source": "./explain",
       "description": "説明スキル。ユーザーの指定した内容について、技術用語を使わずに実際の挙動を主眼に置いた説明をする"
+    },
+    {
+      "name": "agent-reach",
+      "source": "./agent-reach",
+      "description": "agent-reachを使用した、YouTube, GitHub, Reddit, RSS, 一般 Web ページからコンテンツを取得して整形するスキル"
     }
   ]
 }

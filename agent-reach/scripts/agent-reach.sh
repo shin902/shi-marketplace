@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# url-fetch – CLI port of my-discord-agent's url-fetch tool
-# Usage: url-fetch.sh <URL>
+# agent-reach – CLI port of my-discord-agent's agent-reach tool
+# Usage: agent-reach.sh <URL>
 # Outputs fetched content to stdout. Pipe to file with > if needed.
 
 VERSION="0.1.0"
@@ -23,12 +23,12 @@ trap _cleanup EXIT
 
 usage() {
   cat <<EOF
-url-fetch v${VERSION}
+agent-reach v${VERSION}
 
-Usage: url-fetch.sh <URL>
+Usage: agent-reach.sh <URL>
 
 Fetches content from the given URL and outputs to stdout.
-Auto-detects service type (YouTube, GitHub, Reddit, RSS, web).
+Auto-detects service type (YouTube, GitHub, RSS, web).
 EOF
 }
 
@@ -53,11 +53,17 @@ validate_url() {
 
 detect_service() {
   local url="$1"
-  local host
-  # Strip www. and scheme
-  host=$(echo "$url" | sed -E 's|^https?://(www\.)?([^/]+).*|\2|')
-  local path
-  path=$(echo "$url" | sed -E 's|^https?://[^/]+(/[^?#]*)?.*|\1|' | tr '[:upper:]' '[:lower:]')
+  local after_scheme="${url#*://}"
+  local host="${after_scheme%%/*}"
+  host="${host#www.}"
+
+  local path=""
+  if [[ "$after_scheme" == */* ]]; then
+    path="/${after_scheme#*/}"
+    path="${path%%\#*}"
+    path="${path%%\?*}"
+  fi
+  path=$(printf '%s' "$path" | tr '[:upper:]' '[:lower:]')
 
   case "$host" in
     youtube.com|youtu.be) echo "youtube" ;;
@@ -68,7 +74,13 @@ detect_service() {
         echo "web"
       fi
       ;;
-    reddit.com|old.reddit.com) echo "reddit" ;;
+    x.com|www.x.com|twitter.com|www.twitter.com)
+      if [[ "$path" =~ ^/[^/]+/status/[0-9]+ ]]; then
+        echo "x-twitter"
+      else
+        echo "web"
+      fi
+      ;;
     *)
       if [[ "$path" == *.xml || "$path" == *.rss || "$path" == */feed* || "$path" == */rss* ]]; then
         echo "rss"
@@ -186,24 +198,26 @@ format_youtube() {
   sub_files=$(find "$subs_dir" -maxdepth 1 -name '*.vtt' 2>/dev/null || true)
   if [[ -n "$sub_files" ]]; then
     while IFS= read -r vtt_file; do
-      local lang
-      lang=$(basename "$vtt_file" | sed -E 's/.*\.([a-zA-Z-]+)\.vtt$/\1/')
+      local lang base_name
+      base_name=$(basename "$vtt_file")
+      lang="${base_name%.vtt}"
+      lang="${lang##*.}"
       local text
       # Parse VTT: strip timestamps, cue numbers, timing tags, deduplicate.
       # Some YouTube VTT files collapse cue timings into the text line, so
       # remove cue timing ranges wherever they appear before line-oriented parsing.
-      text=$(sed -E \
-        -e 's/[0-9]{2}:[0-9]{2}:[0-9]{2}[.,][0-9]{3}[[:space:]]*-->[[:space:]]*[0-9]{2}:[0-9]{2}:[0-9]{2}[.,][0-9]{3}([[:space:]]+(align:[[:alpha:]-]+|position:[^[:space:]%]+%?|line:[^[:space:]%]+%?|size:[^[:space:]%]+%?|vertical:[[:alpha:]-]+))*//g' \
-        -e 's/[[:space:]]*-->[[:space:]]*[0-9]{2}:[0-9]{2}:[0-9]{2}[.,][0-9]{3}([[:space:]]+(align:[[:alpha:]-]+|position:[^[:space:]%]+%?|line:[^[:space:]%]+%?|size:[^[:space:]%]+%?|vertical:[[:alpha:]-]+))*//g' \
-        "$vtt_file" | awk '
+      text=$(awk '
         BEGIN { seen_count = 0 }
         /^WEBVTT/ { next }
         /^Kind:/ { next }
         /^Language:/ { next }
-        /^[0-9]{2}:[0-9]{2}:[0-9]{2}[.,][0-9]{3}\s*-->/ { next }
         /^[0-9]+$/ { next }
-        /<[0-9]{2}:[0-9]{2}:[0-9]{2}[.,][0-9]{3}>/ { next }
+        /<[0-9][0-9]:[0-9][0-9]:[0-9][0-9][.,][0-9][0-9][0-9]>/ { next }
         {
+          # Some YouTube VTT files collapse cue timings into the text line, so
+          # remove cue timing ranges wherever they appear before line-oriented parsing.
+          gsub(/[0-9][0-9]:[0-9][0-9]:[0-9][0-9][.,][0-9][0-9][0-9][[:space:]]*-->[[:space:]]*[0-9][0-9]:[0-9][0-9]:[0-9][0-9][.,][0-9][0-9][0-9]([[:space:]]+(align:[[:alpha:]-]+|position:[^[:space:]%]+%?|line:[^[:space:]%]+%?|size:[^[:space:]%]+%?|vertical:[[:alpha:]-]+))*/, "")
+          gsub(/[[:space:]]*-->[[:space:]]*[0-9][0-9]:[0-9][0-9]:[0-9][0-9][.,][0-9][0-9][0-9]([[:space:]]+(align:[[:alpha:]-]+|position:[^[:space:]%]+%?|line:[^[:space:]%]+%?|size:[^[:space:]%]+%?|vertical:[[:alpha:]-]+))*/, "")
           gsub(/<[^>]+>/, "")
           gsub(/^[[:space:]]+|[[:space:]]+$/, "")
           if (length($0) == 0) next
@@ -220,7 +234,7 @@ format_youtube() {
           gsub(/。/, "。\n", s)
           printf "%s", s
         }
-      ')
+      ' "$vtt_file")
       if [[ -n "$text" ]]; then
         echo ""
         echo "## 字幕 (${lang})"
@@ -234,88 +248,6 @@ format_youtube() {
     echo ""
     echo "(取得できませんでした)"
   fi
-}
-
-# Reddit: JSON → Markdown
-format_reddit() {
-  local json_file="$1"
-
-  local raw
-  raw=$(cat "$json_file")
-
-  # Thread detail: [{post listing}, {comments listing}]
-  local is_thread
-  is_thread=$(echo "$raw" | jq 'type == "array" and length >= 1' 2>/dev/null || echo "false")
-
-  if [[ "$is_thread" == "true" ]]; then
-    local post
-    post=$(echo "$raw" | jq -r '.[0].data.children[0].data // empty')
-
-    if [[ -n "$post" ]]; then
-      local title subreddit author score num_comments created_utc selftext
-      title=$(echo "$post" | jq -r '.title // empty')
-      subreddit=$(echo "$post" | jq -r '.subreddit // empty')
-      author=$(echo "$post" | jq -r '.author // empty')
-      score=$(echo "$post" | jq -r '.score // 0')
-      num_comments=$(echo "$post" | jq -r '.num_comments // 0')
-      created_utc=$(echo "$post" | jq -r '.created_utc // empty')
-      selftext=$(echo "$post" | jq -r '.selftext // empty')
-
-      echo "# ${title:-"(タイトル不明)"}"
-      echo ""
-      echo "**r/${subreddit}** | u/${author} | スコア: ${score} | コメント: ${num_comments}"
-
-      if [[ -n "$created_utc" && "$created_utc" != "null" ]]; then
-        local date_str
-        # Linux: date -d @EPOCH, macOS: date -r EPOCH
-        date_str=$(date -d "@${created_utc}" '+%Y-%m-%d' 2>/dev/null || date -r "${created_utc}" '+%Y-%m-%d' 2>/dev/null || echo "")
-        if [[ -n "$date_str" ]]; then
-          echo "**投稿日**: ${date_str}"
-        fi
-      fi
-
-      if [[ -n "$selftext" && "$selftext" != "[removed]" && "$selftext" != "[deleted]" ]]; then
-        echo ""
-        echo "## 本文"
-        echo ""
-        echo "$selftext"
-      fi
-
-      # Comments
-      local comments
-      comments=$(echo "$raw" | jq -c '.[1].data.children[]? | select(.kind == "t1")' 2>/dev/null || true)
-      if [[ -n "$comments" ]]; then
-        echo ""
-        echo "## トップコメント"
-        echo ""
-        while IFS= read -r comment; do
-          [[ -z "$comment" ]] && continue
-          local c_author c_score c_body
-          c_author=$(printf '%s' "$comment" | jq -r '.data.author // "unknown"')
-          c_score=$(printf '%s' "$comment" | jq -r '.data.score // 0')
-          c_body=$(printf '%s' "$comment" | jq -r '.data.body // ""')
-          echo "**u/${c_author}** (スコア: ${c_score})"
-          echo "$c_body"
-          echo ""
-        done < <(printf '%s' "$comments" | jq -c '.')
-      fi
-      return
-    fi
-  fi
-
-  # Subreddit listing
-  local children
-  children=$(echo "$raw" | jq -r '.data.children // [] | length' 2>/dev/null || echo "0")
-  if (( children > 0 )); then
-    echo "# 投稿一覧"
-    echo ""
-    echo "$raw" | jq -r '.data.children[] | "## \(.data.title)\nu/\(.data.author) | スコア: \(.data.score) | コメント: \(.data.num_comments)\nURL: \(.data.url)\n"'
-    return
-  fi
-
-  echo "(Reddit レスポンスの構造を解析できませんでした)"
-  echo ""
-  echo "${raw:0:1000}"
 }
 
 # ── Fetchers ─────────────────────────────────────────────────────────────────
@@ -348,8 +280,15 @@ fetch_github_repo() {
   check_cmd curl
   check_cmd jq
 
-  local repo_path
-  repo_path=$(echo "$url" | sed -E 's|^https?://github.com/([^/]+/[^/?#]+).*|\1|')
+  local repo_path after_scheme path_part owner repo
+  after_scheme="${url#*://}"
+  path_part="${after_scheme#*/}"
+  path_part="${path_part%%\#*}"
+  path_part="${path_part%%\?*}"
+  owner="${path_part%%/*}"
+  repo="${path_part#*/}"
+  repo="${repo%%/*}"
+  repo_path="${owner}/${repo}"
 
   local api_base="https://api.github.com/repos/${repo_path}"
 
@@ -398,23 +337,51 @@ fetch_github_repo() {
   fi
 }
 
-fetch_reddit() {
+fetch_x_twitter() {
   local url="$1"
   check_cmd curl
+  check_cmd jq
 
-  local tmp_file
-  tmp_file=$(mktemp)
-  _register_cleanup "$tmp_file"
-
-  local json_url
-  if [[ "$url" == *.json ]]; then
-    json_url="$url"
-  else
-    json_url=$(echo "$url" | sed -E 's|/?(\?.*)?$|.json\1|')
+  local username tweetId after_scheme path_part rest
+  after_scheme="${url#*://}"
+  path_part="${after_scheme#*/}"
+  path_part="${path_part%%\#*}"
+  path_part="${path_part%%\?*}"
+  username="${path_part%%/*}"
+  rest="${path_part#*/}"
+  if [[ "$rest" != status/* ]]; then
+    die "X/Twitter URL からツイートIDを取得できません: ${url}"
   fi
+  tweetId="${rest#status/}"
+  tweetId="${tweetId%%/*}"
 
-  curl -sf "$json_url" -H "User-Agent: url-fetch-cli/1.0" > "$tmp_file"
-  format_reddit "$tmp_file"
+  local json
+  json=$(curl -sf "https://api.fxtwitter.com/${username}/status/${tweetId}") \
+    || die "fxtwitter API error for ${url}"
+
+  local code
+  code=$(echo "$json" | jq -r '(.code // 0) | tostring')
+  [[ "$code" != "200" ]] && die "fxtwitter API returned code ${code} for ${url}"
+
+  local text screen_name author_name created_at likes retweets replies views
+  text=$(echo "$json"        | jq -r '.tweet.text // ""')
+  screen_name=$(echo "$json" | jq -r '.tweet.author.screen_name // ""')
+  author_name=$(echo "$json" | jq -r '.tweet.author.name // ""')
+  created_at=$(echo "$json"  | jq -r '.tweet.created_at // ""')
+  likes=$(echo "$json"       | jq -r 'if .tweet.likes != null then (.tweet.likes|tostring) else "" end')
+  retweets=$(echo "$json"    | jq -r 'if .tweet.retweets != null then (.tweet.retweets|tostring) else "" end')
+  replies=$(echo "$json"     | jq -r 'if .tweet.replies != null then (.tweet.replies|tostring) else "" end')
+  views=$(echo "$json"       | jq -r 'if .tweet.views != null then (.tweet.views|tostring) else "" end')
+
+  echo "# @${screen_name} (${author_name})"
+  echo ""
+  echo "${text}"
+  echo ""
+  [[ -n "$created_at" ]] && echo "**投稿日時**: ${created_at}"
+  [[ -n "$likes"      ]] && echo "**いいね**: ${likes}"
+  [[ -n "$retweets"   ]] && echo "**リツイート**: ${retweets}"
+  [[ -n "$replies"    ]] && echo "**返信**: ${replies}"
+  [[ -n "$views"      ]] && echo "**表示回数**: ${views}"
 }
 
 fetch_rss() {
@@ -455,7 +422,7 @@ main() {
   case "$service" in
     youtube)      fetch_youtube "$url" ;;
     github-repo)  fetch_github_repo "$url" ;;
-    reddit)       fetch_reddit "$url" ;;
+    x-twitter)    fetch_x_twitter "$url" ;;
     rss)          fetch_rss "$url" ;;
     web)          fetch_web "$url" ;;
     *)            die "unknown service: $service" ;;

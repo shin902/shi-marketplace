@@ -1,7 +1,7 @@
 ---
 name: git-commit-push
 description: このエージェントは、未コミットの変更がある場合に使用してください。例：\n- <example>\nContext: ユーザーがコードの変更を完了し、Gitリポジトリにコミットしたい場合\nuser: "新しい機能を実装したので、コミットしてプッシュしてください"\nassistant: "git-commit-pushエージェントを使用して、未コミットの変更を確認し、適切な粒度でコミットを作成してプッシュします"\n</example>\n- <example>\nContext: 複数のファイルに変更があり、論理的にグループ化してコミットしたい場合\nuser: "バグ修正とリファクタリングを行いました。適切にコミットしてください"\nassistant: "git-commit-pushエージェントを使用して、変更内容を分析し、バグ修正とリファクタリングを別々のコミットとして作成します"\n</example>
-tools: Bash
+tools: Bash(git:*)
 color: blue
 model: Haiku
 ---

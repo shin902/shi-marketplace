@@ -68,6 +68,11 @@
       "name": "nested-orchestration",
       "source": "./nested-orchestration",
       "description": "ネストされたオーケストレーションを管理し、長時間自律的に作業することを可能にする"
+    },
+    {
+      "name": "subagent-implementation",
+      "source": "./subagent-implementation",
+      "description": "タスクごとにSonnetでサブエージェントを直列で起動し、実装、変更内容のコミットをさせる"
     }
   ]
 }

@@ -1,0 +1,8 @@
+{
+    "name": "subagent-implementation",
+    "description": "サブエージェントにタスクごとに委託して、コミットまでさせる",
+    "version": "0.0.1",
+    "author": {
+        "name": "shi."
+    }
+}

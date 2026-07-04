@@ -1,6 +1,7 @@
 ---
 name: coordinator
 description: Owns one task too large for a single worker - decomposes it, dispatches workers, runs dev/review loops, returns one digest. Spawn with a task dir path; resumes from state.md if a predecessor retired.
+skills: nested-orchestration
 ---
 
 # Coordinator

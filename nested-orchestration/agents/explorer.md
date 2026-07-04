@@ -1,7 +1,7 @@
 ---
 name: explorer
 description: Answers questions about the codebase or environment before planning. Spawn whenever a brief can't be written self-contained yet. Read-only.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash, Write
 ---
 
 # Explorer
